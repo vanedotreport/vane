@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Build log — Vane</title>
+<meta name="description" content="What works, what doesn't, and the bugs found along the way. Vane is built in the open, mistakes included." />
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <svg class="mark" width="27" height="27" viewBox="0 0 40 40" aria-hidden="true">
+      <g fill="none" stroke="currentColor" stroke-linecap="round">
+        <path d="M13 5.5 L13 34.5" stroke-width="2.1"/><path d="M13 10.5 L23.5 6.2" stroke-width="2.1"/>
+        <path d="M13 16 L29 9.5" stroke-width="2.1"/>
+        <path class="fin" d="M6.5 24.5 L33 13.7" stroke-width="2.6"/>
+        <path d="M13 27 L25 22.1" stroke-width="2.1"/><path d="M13 32 L20.5 28.9" stroke-width="2.1"/>
+      </g>
+    </svg>
+    <a href="/" style="text-decoration:none;color:inherit"><span class="wm">Vane</span></a>
+    <nav><a href="/">Home</a><a href="https://github.com/vanedotreport/vane">Source</a></nav>
+  </header>
+
+  <div class="doc" style="max-width:720px">
+    <h1>Build log</h1>
+    <p class="updated">Last updated 5 August 2026</p>
+
+    <p>Vane is being built in the open. That means the mistakes are published too — which is the
+      point, since a tool that claims to tell you what really happened has to be willing to show
+      when it got something wrong.</p>
+
+    <h2>Working now</h2>
+    <ul>
+      <li>A full token dossier from chain data alone in about <b>69 RPC calls</b> — deployer age,
+        funding, launch-block capture, current posture. No API keys.</li>
+      <li>Token-creation indexing across arbitrary block ranges, with launchpad venues
+        <b>discovered from the data</b> rather than hardcoded.</li>
+      <li>Outcome resolution — take tokens indexed at birth, resolve what happened to them later.</li>
+      <li>Trade-tape reconstruction: per-pool liquidity over time, and the single largest extraction.</li>
+    </ul>
+
+    <h2>Not working yet</h2>
+    <ul>
+      <li><b>No site-side lookup.</b> The search box on the front page is not live; the tooling
+        behind it runs on the command line.</li>
+      <li><b>Two known bugs</b> — see 03 and 04 below. Nothing gets published as a report until
+        they are fixed, because both produce confident wrong answers rather than errors.</li>
+      <li><b>No historical backfill.</b> Public RPC serves roughly 72 hours; anything older needs the
+        Old Faithful archive, which is free but not yet wired up.</li>
+      <li><b>No per-token scoring, and possibly never.</b> At n=47 one signal was directionally
+        right, one was null, and one came out backwards. Aggregates need no prediction, so those
+        ship first.</li>
+    </ul>
+
+    <h2>What has been measured</h2>
+    <p><b>74% of Solana tokens are silent within 24 hours of launch</b> — 35 of 47, median 24
+      lifetime transactions, "silent" meaning no trade in six hours. One 24-hour window, small
+      sample, stated with its size. Bigger ones will be published with intervals.</p>
+    <p>Also: <b>100% of token creations are inner instructions</b>; roughly 50–87k mints a day,
+      which is about 4–6 GB a year of index — small enough for one person to own; and transaction
+      count is a terrible proxy for volume, since one token showed 260 transactions and three
+      actual trades.</p>
+
+    <h2>Bugs found while building</h2>
+    <p>Every one of these returned a plausible wrong answer rather than throwing. That pattern is
+      the reason the calibration discipline exists at all.</p>
+
+    <div class="finds">
+      <div class="find"><span class="n">01</span><span class="t">
+        Every token creation is an inner instruction
+        <em>Fixed. A top-level scan returns zero on a chain minting tens of thousands of tokens a day — and zero looks plausible</em>
+      </span></div>
+      <div class="find"><span class="n">02</span><span class="t">
+        Pump.fun bonding curves hold native SOL
+        <em>Fixed. Invisible to token-balance parsing; the parser reported "no trades found" on the most common launchpad on Solana</em>
+      </span></div>
+      <div class="find"><span class="n">03</span><span class="t">
+        A token trades on more than one pool
+        <em>Open. Merging them produced "66.7% of liquidity removed in one transaction" out of a two-lamport dust trade</em>
+      </span></div>
+      <div class="find"><span class="n">04</span><span class="t">
+        The fee payer is not the creator
+        <em>Open. Launchpads sponsor transactions, which inverted a signal outright — and "this wallet created 47 tokens" is a claim about a person</em>
+      </span></div>
+    </div>
+
+    <div class="btnrow">
+      <a class="btn" href="https://github.com/vanedotreport/vane/blob/main/FINDINGS.md">Full write-up</a>
+      <a class="btn ghost" href="https://github.com/vanedotreport/vane">Source on GitHub</a>
+    </div>
+
+    <a class="back" href="/">← back to vane.report</a>
+  </div>
+</div>
+</body>
+</html>

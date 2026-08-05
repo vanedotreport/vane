@@ -1,0 +1,155 @@
+:root {
+    --paper:#E9EBE6; --surface:#F6F7F4; --sunk:#DFE3DC;
+    --ink:#161C21; --ink-2:#47535C; --ink-3:#7C8A93;
+    --rule:#D2D7D0; --rule-2:#BEC5BC;
+    --accent:#1E4E78; --brass:#B27B36;
+    --good:#2E6B4F; --warn:#A8761C; --crit:#9E3B2E;
+    /* Fallbacks that actually exist off macOS. Segoe UI covers Windows, Georgia and Cambria
+       cover the serif everywhere. Real self-hosted webfonts are the proper fix — noted in BRAND.md. */
+    --sans:"Avenir Next","Avenir","Segoe UI",ui-sans-serif,system-ui,sans-serif;
+    --serif:"Charter","Bitstream Charter","Iowan Old Style","Cambria",Georgia,ui-serif,serif;
+    --mono:ui-monospace,"SF Mono","Menlo","Cascadia Mono","Consolas",monospace;
+
+    /* One scale. Every size on the page comes from here — the previous version used a dozen
+       arbitrary values and the rhythm drifted. */
+    --t-xs:12px; --t-sm:13px; --t-base:15px; --t-md:17px;
+    --t-lg:20px; --t-xl:25px; --t-2xl:32px;
+  }
+  @media (prefers-color-scheme: dark) { :root {
+    --paper:#0F141A; --surface:#161D24; --sunk:#0B1015;
+    --ink:#E6EAE7; --ink-2:#A3B0B8; --ink-3:#6E7C86;
+    --rule:#26303A; --rule-2:#33404B; --accent:#6BA3D6; --brass:#D9A45E;
+    --good:#57A67C; --warn:#D3A34A; --crit:#D2685A; } }
+  :root[data-theme="dark"] {
+    --paper:#0F141A; --surface:#161D24; --sunk:#0B1015;
+    --ink:#E6EAE7; --ink-2:#A3B0B8; --ink-3:#6E7C86;
+    --rule:#26303A; --rule-2:#33404B; --accent:#6BA3D6; --brass:#D9A45E;
+    --good:#57A67C; --warn:#D3A34A; --crit:#D2685A; }
+  :root[data-theme="light"] {
+    --paper:#E9EBE6; --surface:#F6F7F4; --sunk:#DFE3DC;
+    --ink:#161C21; --ink-2:#47535C; --ink-3:#7C8A93;
+    --rule:#D2D7D0; --rule-2:#BEC5BC; --accent:#1E4E78; --brass:#B27B36;
+    --good:#2E6B4F; --warn:#A8761C; --crit:#9E3B2E; }
+
+  * { box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+
+  /* A wind field. A meteorological chart is barbs on a grid, each showing direction and strength
+     at a point — and the mark is a barb, so the background is the brand's own logic as ambient
+     data rather than a texture bolted on. Static: a landing page has no business burning battery
+     on an animation nobody asked for. */
+  #field { position:fixed; inset:0; width:100%; height:100%; z-index:-1; pointer-events:none;
+           /* fades out before it reaches the reading column */
+           -webkit-mask-image:linear-gradient(180deg, #000 0%, rgba(0,0,0,.55) 34%, transparent 68%);
+           mask-image:linear-gradient(180deg, #000 0%, rgba(0,0,0,.55) 34%, transparent 68%); }
+  body { margin:0; background:var(--paper); color:var(--ink); font-family:var(--sans);
+         font-size:16px; line-height:1.5; -webkit-font-smoothing:antialiased; }
+  .wrap { max-width:860px; margin:0 auto; padding:0 22px; }
+  .lbl { font-family:var(--sans); font-size:10px; font-weight:600; letter-spacing:.14em;
+         text-transform:uppercase; color:var(--ink-3); }
+  a { color:var(--accent); text-underline-offset:3px; }
+
+  /* ---------- masthead ---------- */
+  .top { display:flex; align-items:center; gap:11px; padding:22px 0 0; }
+  .mark { color:var(--accent); flex:none; }
+  .mark .fin { stroke:var(--brass); }
+  .wm { font-size:20px; font-weight:600; letter-spacing:-.015em; }
+  .top nav { margin-left:auto; display:flex; gap:20px; }
+  .top nav a { font-family:var(--sans); font-size:13px; color:var(--ink-3); text-decoration:none; }
+  .top nav a:hover { color:var(--ink); }
+
+  /* ---------- hero: one measured fact ---------- */
+  .hero { padding:60px 0 48px; }
+  /* Stacked, not baseline-aligned. A 130px numeral beside 30px text reads as two unrelated
+     objects with a hole between them; stacked and tight it reads as one sentence. */
+  .big { display:flex; flex-direction:column; align-items:flex-start; }
+  .num { font-family:var(--serif); font-size:clamp(76px,13.5vw,132px); font-weight:600; line-height:.86;
+         letter-spacing:-.035em; color:var(--ink); }
+  .num i { font-style:normal; color:var(--brass); }
+  .claim { font-family:var(--serif); font-size:clamp(24px,4vw,36px); line-height:1.18; font-weight:600;
+           letter-spacing:-.012em; margin:14px 0 0; max-width:22ch; text-wrap:balance; }
+  /* The sample size sits in the hero on purpose. Nobody does this; it is the whole posture. */
+  .prov { margin-top:26px; font-family:var(--mono); font-size:var(--t-xs); color:var(--ink-3); line-height:1.7; }
+  .prov b { color:var(--ink-2); font-weight:400; }
+  .lede { margin:32px 0 0; font-family:var(--serif); font-size:var(--t-md); line-height:1.6; color:var(--ink-2);
+          max-width:56ch; }
+  .lede b { color:var(--ink); font-weight:600; }
+
+  /* ---------- search ---------- */
+  .searchwrap { margin:34px 0 0; }
+  .sbox { position:relative; max-width:560px; }
+  .sbox input { width:100%; font-family:var(--mono); font-size:14.5px; padding:15px 17px 15px 44px;
+                background:var(--surface); border:1px solid var(--rule-2); border-radius:3px; color:var(--ink); }
+  .sbox input::placeholder { font-family:var(--sans); color:var(--ink-3); }
+  .sbox input:focus { outline:none; border-color:var(--accent); }
+  .sbox svg { position:absolute; left:15px; top:50%; transform:translateY(-50%); color:var(--ink-3); }
+  .snote { margin-top:12px; font-family:var(--serif); font-size:var(--t-sm); color:var(--ink-3); font-style:italic; min-height:1.5em; }
+  .snote.on { color:var(--ink-2); font-style:normal; }
+
+  /* ---------- sections ---------- */
+  section { padding:52px 0; border-top:1px solid var(--rule); }
+  h2 { font-family:var(--serif); font-size:var(--t-xl); font-weight:600; margin:0 0 10px; letter-spacing:-.01em; }
+  .sub { font-family:var(--serif); font-size:var(--t-md); color:var(--ink-2); margin:0 0 26px; max-width:58ch; line-height:1.6; }
+
+  .two { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+  @media (max-width:680px) { .two { grid-template-columns:1fr; } }
+  .card { border:1px solid var(--rule); border-radius:3px; padding:20px; background:var(--surface); }
+  .card h3 { font-family:var(--serif); font-size:var(--t-md); margin:0 0 12px; font-weight:600; }
+  .card ul { margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:11px; }
+  /* position/absolute, NOT grid. In grid the <b> becomes its own item and the text after it
+     wraps into the 16px bullet column — one word per line. */
+  .card li { font-family:var(--serif); font-size:var(--t-base); line-height:1.55; color:var(--ink-2);
+             position:relative; padding-left:19px; }
+  .card li::before { content:""; position:absolute; left:0; top:8px;
+                     width:7px; height:7px; border-radius:50%; }
+  .does li::before { background:var(--accent); }
+  .wont li::before { background:var(--crit); }
+  .card li b { color:var(--ink); font-weight:600; }
+
+  .quote { font-family:var(--serif); font-size:var(--t-lg); line-height:1.55; color:var(--ink); max-width:52ch;
+           border-left:3px solid var(--brass); padding-left:20px; margin:0; }
+  .quote span { color:var(--ink-3); display:block; margin-top:10px; font-size:var(--t-base); }
+
+  .finds { display:flex; flex-direction:column; gap:0; }
+  .find { display:grid; grid-template-columns:34px 1fr; gap:14px; padding:15px 0; border-bottom:1px solid var(--rule); align-items:start; }
+  .find:last-child { border-bottom:0; }
+  .find .n { font-family:var(--mono); font-size:12px; color:var(--brass); padding-top:3px; }
+  .find .t { font-family:var(--serif); font-size:var(--t-md); line-height:1.45; }
+  .find .t em { font-style:normal; display:block; font-family:var(--sans); font-size:var(--t-sm); color:var(--ink-3); margin-top:5px; }
+
+  .btnrow { display:flex; gap:11px; flex-wrap:wrap; margin-top:26px; align-items:center; }
+  .btn { font-family:var(--sans); font-size:13.5px; font-weight:600; padding:11px 20px; border-radius:2px;
+         border:1px solid var(--accent); background:var(--accent); color:var(--paper); text-decoration:none; display:inline-block; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn { color:#0F141A; } }
+  :root[data-theme="dark"] .btn { color:#0F141A; }
+  .btn.ghost { background:transparent; color:var(--ink-2); border-color:var(--rule-2); }
+  .btn.ghost:hover { color:var(--ink); border-color:var(--ink-3); }
+  .btn:focus-visible, .sbox input:focus-visible { outline:2px solid var(--brass); outline-offset:2px; }
+
+  footer { padding:40px 0 60px; border-top:1px solid var(--rule); }
+  .fnote { font-family:var(--serif); font-size:var(--t-base); color:var(--ink-3); line-height:1.65; max-width:60ch; }
+  .fnote b { color:var(--ink-2); font-weight:600; }
+  .frow { display:flex; gap:18px; margin-top:20px; flex-wrap:wrap; font-family:var(--sans); font-size:13px; }
+  .frow a { color:var(--ink-3); text-decoration:none; }
+  .frow a:hover { color:var(--ink); }
+
+/* ---------- legal footer ---------- */
+.legal { margin-top:26px; padding-top:20px; border-top:1px solid var(--rule); }
+.legal p { font-family:var(--serif); font-size:var(--t-sm); line-height:1.7; color:var(--ink-3);
+           margin:0 0 12px; max-width:70ch; }
+.legal p:last-child { margin-bottom:0; }
+.legal b { color:var(--ink-2); font-weight:600; }
+.copy { margin-top:22px; font-family:var(--mono); font-size:var(--t-xs); color:var(--ink-3); }
+
+/* ---------- document pages ---------- */
+.doc { padding:44px 0 72px; max-width:680px; }
+.doc h1 { font-family:var(--serif); font-size:var(--t-2xl); font-weight:600; margin:0 0 6px; letter-spacing:-.015em; }
+.doc .updated { font-family:var(--mono); font-size:var(--t-xs); color:var(--ink-3); margin:0 0 30px; }
+.doc h2 { font-family:var(--serif); font-size:var(--t-lg); font-weight:600; margin:32px 0 10px; }
+.doc p, .doc li { font-family:var(--serif); font-size:var(--t-base); line-height:1.7; color:var(--ink-2); }
+.doc p { margin:0 0 14px; }
+.doc ul { margin:0 0 14px; padding-left:20px; }
+.doc li { margin-bottom:8px; }
+.doc b { color:var(--ink); font-weight:600; }
+.doc .back { display:inline-block; margin-top:34px; font-family:var(--sans); font-size:var(--t-sm); color:var(--ink-3); text-decoration:none; }
+.doc .back:hover { color:var(--ink); }

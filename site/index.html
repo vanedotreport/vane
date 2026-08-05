@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Vane — which way the flow is moving</title>
+<meta name="description" content="Post-mortems for Solana tokens. Three in four are silent within 24 hours; Vane explains what happened. Observables, never intent. Free, no accounts, nothing tracked." />
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<meta property="og:title" content="Vane — which way the flow is moving" />
+<meta property="og:description" content="Three in four Solana tokens are silent within 24 hours. Vane explains what happened to the ones that mattered." />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="https://vane.report/og.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@vanedotreport" />
+<meta property="og:url" content="https://vane.report" />
+<link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+<canvas id="field" aria-hidden="true"></canvas>
+
+<div class="wrap">
+  <header class="top">
+    <svg class="mark" width="27" height="27" viewBox="0 0 40 40" aria-hidden="true">
+      <g fill="none" stroke="currentColor" stroke-linecap="round">
+        <path d="M13 5.5 L13 34.5" stroke-width="2.1"/><path d="M13 10.5 L23.5 6.2" stroke-width="2.1"/>
+        <path d="M13 16 L29 9.5" stroke-width="2.1"/>
+        <path class="fin" d="M6.5 24.5 L33 13.7" stroke-width="2.6"/>
+        <path d="M13 27 L25 22.1" stroke-width="2.1"/><path d="M13 32 L20.5 28.9" stroke-width="2.1"/>
+      </g>
+    </svg>
+    <span class="wm">Vane</span>
+    <nav>
+      <a href="#principle">Principle</a>
+      <a href="/log">Build log</a>
+      <a href="https://github.com/vanedotreport/vane">Source</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <div class="big">
+      <div class="num">74<i>%</i></div>
+      <p class="claim">of Solana tokens are silent within 24 hours of launch.</p>
+    </div>
+
+    <p class="prov">
+      measured 2026-08-05 · <b>n = 47</b> · one 24-hour window · "silent" = no trade in 6h<br>
+      small sample, stated plainly. larger ones will be published with their intervals.
+    </p>
+
+    <p class="lede">
+      When a token dies the chart just stops, and whoever is still holding it gets no explanation.
+      Everything needed to reconstruct what happened is public. <b>Vane assembles it into something
+      a person can read</b> — who deployed it, how old that wallet was, who took supply in the launch
+      block, and the single transaction that ended it.
+    </p>
+
+    <div class="searchwrap">
+      <div class="sbox">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.6"/><path d="M11 11l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <input id="q" type="text" spellcheck="false" autocomplete="off"
+               placeholder="Paste a mint address, signature, or slot" aria-label="Look up a Solana token" />
+      </div>
+      <p class="snote" id="snote">Not live yet. The tooling behind it is public and working today.</p>
+    </div>
+  </div>
+
+  <section id="principle">
+    <h2>Observables, never intent</h2>
+    <p class="sub">
+      The difference between a useful report and a lawsuit is one sentence, so it is worth being
+      exact about which sentences Vane will write.
+    </p>
+    <blockquote class="quote">
+      “The deployer wallet existed for 84 minutes before launch, and took 100% of supply in the
+      launch block.”
+      <span>A fact. Every figure reproducible from the signatures cited.</span>
+    </blockquote>
+    <blockquote class="quote" style="border-left-color:var(--crit); margin-top:22px">
+      “This is a scam.”
+      <span>An accusation. Vane does not make them.</span>
+    </blockquote>
+
+    <div class="two" style="margin-top:34px">
+      <div class="card does">
+        <h3>What it does</h3>
+        <ul>
+          <li><b>Reconstructs the chronology</b> — deployment, launch block, liquidity curve, the death event</li>
+          <li><b>Names the sample size</b> next to every rate, including the ones that look bad</li>
+          <li><b>States what it cannot see</b> on every report, with a versioned detector id</li>
+          <li><b>Publishes aggregates first</b> — launchpad survival needs no prediction</li>
+        </ul>
+      </div>
+      <div class="card wont">
+        <h3>What it won't</h3>
+        <ul>
+          <li><b>No verdicts.</b> "Rug" is not a detector output</li>
+          <li><b>No faces.</b> Accounts that mentioned a token are listed by <em>when</em>, never as participants</li>
+          <li><b>No accounts, no tracking.</b> Nothing is stored about you</li>
+          <li><b>No confident numbers</b> for things that cannot be measured</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="findings">
+    <h2>Built in the open, mistakes included</h2>
+    <p class="sub">
+      A tool that claims to tell you what really happened has to be willing to show when it got
+      something wrong. Four parser bugs so far, two still open — all of which returned plausible
+      wrong answers rather than errors. The build log says what works today and what doesn't.
+    </p>
+    <div class="btnrow" style="margin-top:20px">
+      <a class="btn" href="/log">Build log</a>
+      <a class="btn ghost" href="https://github.com/vanedotreport/vane">Source on GitHub</a>
+    </div>
+  </section>
+
+  <footer>
+    <p class="fnote">
+      <b>Free, and intended to stay that way.</b> There is no paywall, no account and no tracking —
+      the analytics that would tell us whether any of this is working are the same analytics we
+      refuse to run. Reports cost compute; if the tool is useful to you, support keeps it running.
+      <br><br>
+      Charging someone for an explanation of how they were rugged is insult on top of injury.
+    </p>
+    <div class="legal">
+      <p>
+        <b>Nothing here is financial advice.</b> Vane publishes descriptions of things that already
+        happened on a public blockchain. It does not tell you what to buy, hold or sell, it does not
+        predict prices, and it has no opinion on whether any token is a good idea. Do your own
+        research, and do not treat anything on this site as a substitute for it.
+      </p>
+      <p>
+        <b>Reports describe on-chain events, not people.</b> A wallet is not a person, and Vane does
+        not know who controls one. Nothing published here is an allegation that any individual or
+        organisation has committed fraud, broken a law, or acted in bad faith — and statements about
+        timing, balances and transactions should not be read as implying it. Where an account is
+        listed as having mentioned a token, that records only that it posted and when.
+      </p>
+      <p>
+        <b>The data can be wrong.</b> It is derived from public chain data by software with known
+        limitations, which are published alongside every report and in the
+        <a href="https://github.com/vanedotreport/vane/blob/main/FINDINGS.md">findings</a>. Every
+        figure cites the transaction signatures it came from so you can check it yourself. If
+        something is wrong, <a href="https://github.com/vanedotreport/vane/issues">tell us</a> and it
+        will be corrected in public.
+      </p>
+      <p>
+        Provided as-is, without warranty of any kind. Vane is not affiliated with, endorsed by, or
+        speaking for Solana, any launchpad, exchange, or token named on this site.
+      </p>
+    </div>
+
+    <div class="frow">
+      <a href="/terms">Terms</a>
+      <a href="/privacy">Privacy</a>
+      <a href="https://github.com/vanedotreport/vane">GitHub</a>
+      <a href="https://x.com/vanedotreport">@vanedotreport</a>
+    </div>
+    <p class="copy">© 2026 Vane · vane.report</p>
+  </footer>
+</div>
+
+<script>
+  // The lookup isn't live. Rather than a dead input, tell the truth about what was recognised —
+  // it demonstrates the disambiguation the product will do, and sets the expectation honestly.
+  var q = document.getElementById("q"), note = document.getElementById("snote");
+  var DEFAULT = "Not live yet. The tooling behind it is public and working today.";
+  function classify(v) {
+    v = v.trim();
+    if (!v) return DEFAULT;
+    if (/^\d+$/.test(v)) return "Looks like a slot. Reports aren't live yet — the block scanner is in the repo.";
+    if (/^[1-9A-HJ-NP-Za-km-z]{86,90}$/.test(v)) return "Looks like a transaction signature. Not live yet.";
+    if (/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(v)) return "Looks like an address — wallet, mint or pool. Not live yet; try dossier.mjs in the repo.";
+    return "Not recognised as a Solana address, signature or slot.";
+  }
+  q.addEventListener("input", function () {
+    note.textContent = classify(q.value);
+    note.classList.toggle("on", q.value.trim().length > 0);
+  });
+</script>
+
+<script>
+(function () {
+  var cv = document.getElementById("field"), ctx = cv.getContext("2d");
+  var STEP = 62;          // grid spacing
+  var css = function (n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); };
+
+  // Smooth angle field from summed sines — swirls like airflow, where pure random would look
+  // like static and a repeating SVG pattern would look mechanical.
+  function angleAt(x, y) {
+    return Math.sin(x * 0.0055) * 1.15
+         + Math.cos(y * 0.0080) * 0.85
+         + Math.sin((x + y) * 0.0034) * 0.55;
+  }
+  // Independent field for barb length, so direction and strength vary separately, as they do
+  // on a real chart.
+  function strengthAt(x, y) {
+    return 0.45 + 0.55 * Math.abs(Math.sin(x * 0.0042 + y * 0.0031));
+  }
+
+  function draw() {
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var w = window.innerWidth, h = window.innerHeight;
+    cv.width = w * dpr; cv.height = h * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, w, h);
+
+    var accent = css("--accent"), brass = css("--brass");
+    var dark = getComputedStyle(document.body).backgroundColor.match(/\d+/g);
+    var isDark = dark && (+dark[0] + +dark[1] + +dark[2]) / 3 < 90;
+
+    ctx.lineCap = "round";
+    for (var y = STEP * 0.5; y < h + STEP; y += STEP) {
+      for (var x = STEP * 0.5; x < w + STEP; x += STEP) {
+        var a = angleAt(x, y), len = STEP * 0.40 * strengthAt(x, y);
+        // Rare brass barb — the anomaly, same rule as the mark. Deterministic, not random,
+        // so it doesn't shuffle on every resize.
+        var odd = (Math.sin(x * 0.021) * Math.cos(y * 0.017)) > 0.86;
+
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(a);
+        ctx.strokeStyle = odd ? brass : accent;
+        ctx.globalAlpha = odd ? (isDark ? 0.30 : 0.26) : (isDark ? 0.155 : 0.135);
+        ctx.lineWidth = odd ? 1.5 : 1.15;
+        ctx.beginPath();                       // staff
+        ctx.moveTo(0, -len); ctx.lineTo(0, len);
+        ctx.stroke();
+        ctx.beginPath();                       // two barbs, angled off the staff
+        ctx.moveTo(0, -len);      ctx.lineTo(len * 0.52, -len * 0.62);
+        ctx.moveTo(0, -len * 0.5); ctx.lineTo(len * 0.38, -len * 0.19);
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  draw();
+  var t; addEventListener("resize", function () { clearTimeout(t); t = setTimeout(draw, 140); });
+  // Repaint when the theme flips, in either direction.
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", draw);
+  new MutationObserver(draw).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+})();
+</script>
+</body>
+</html>

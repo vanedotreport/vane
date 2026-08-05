@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" role="img" aria-label="Vane — 74% of Solana tokens are silent within 24 hours">
+  <title>Vane</title>
+  <rect width="1200" height="630" fill="#0F141A"/>
+  <g stroke-linecap="round" opacity=".13">
+    <path d="M980 120 L1105 74"  stroke="#6BA3D6" stroke-width="5"/>
+    <path d="M980 185 L1150 118" stroke="#6BA3D6" stroke-width="5"/>
+    <path d="M980 315 L1120 258" stroke="#6BA3D6" stroke-width="5"/>
+    <path d="M980 380 L1064 348" stroke="#6BA3D6" stroke-width="5"/>
+    <path d="M980 60  L980 470"  stroke="#6BA3D6" stroke-width="5"/>
+  </g>
+  <path d="M918 262 L1178 158" stroke="#D9A45E" stroke-width="6" stroke-linecap="round" opacity=".55"/>
+
+  <g transform="translate(84,72)">
+    <g fill="none" stroke-linecap="round" transform="scale(1.15)">
+      <path d="M13 5.5 L13 34.5"   stroke="#6BA3D6" stroke-width="2.1"/>
+      <path d="M13 10.5 L23.5 6.2" stroke="#6BA3D6" stroke-width="2.1"/>
+      <path d="M13 16 L29 9.5"     stroke="#6BA3D6" stroke-width="2.1"/>
+      <path d="M6.5 24.5 L33 13.7" stroke="#D9A45E" stroke-width="2.6"/>
+      <path d="M13 27 L25 22.1"    stroke="#6BA3D6" stroke-width="2.1"/>
+      <path d="M13 32 L20.5 28.9"  stroke="#6BA3D6" stroke-width="2.1"/>
+    </g>
+    <text x="56" y="32" font-family="Avenir Next, Futura, system-ui, sans-serif" font-size="30" font-weight="600" letter-spacing="-0.6" fill="#E6EAE7">Vane</text>
+  </g>
+
+  <text x="84" y="330" font-family="Charter, Iowan Old Style, Georgia, serif" font-size="186" font-weight="600" letter-spacing="-8" fill="#E6EAE7">74<tspan fill="#D9A45E">%</tspan></text>
+  <text x="84" y="404" font-family="Charter, Iowan Old Style, Georgia, serif" font-size="40" font-weight="600" fill="#E6EAE7">of Solana tokens are silent</text>
+  <text x="84" y="452" font-family="Charter, Iowan Old Style, Georgia, serif" font-size="40" font-weight="600" fill="#E6EAE7">within 24 hours of launch.</text>
+  <text x="84" y="516" font-family="ui-monospace, SF Mono, Menlo, monospace" font-size="20" fill="#6E7C86">n = 47 · one 24-hour window · small sample, stated plainly</text>
+  <text x="84" y="566" font-family="Avenir Next, Futura, system-ui, sans-serif" font-size="21" fill="#8C99A4">vane.report</text>
+</svg>
