@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="16" height="16" role="img" aria-label="Vane">
+  <title>Vane</title>
+  <!-- SMALL-SIZE CUT, not a scaled-down mark.
+       Six barbs turn to mush at 16px, so this drops to three: staff, two ticks, and the odd one out.
+       Strokes are thickened because hairlines vanish. Do not use this above ~20px. -->
+  <g fill="none" stroke-linecap="round">
+    <path d="M13 6 L13 34"    stroke="#1E4E78" stroke-width="3"/>
+    <path d="M13 11 L25 6.5"  stroke="#1E4E78" stroke-width="3"/>
+    <path d="M6.5 24.5 L33 13.5" stroke="#B27B36" stroke-width="3.6"/>
+    <path d="M13 31 L22 27"   stroke="#1E4E78" stroke-width="3"/>
+  </g>
+</svg>

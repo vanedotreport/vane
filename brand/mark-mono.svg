@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40" role="img" aria-label="Vane">
+  <title>Vane</title>
+  <!-- One-colour. Inherits currentColor, so it takes the surrounding text colour.
+       The anomaly barb keeps its emphasis through WEIGHT rather than hue. -->
+  <g fill="none" stroke="currentColor" stroke-linecap="round">
+    <path d="M13 5.5 L13 34.5"   stroke-width="2.1"/>
+    <path d="M13 10.5 L23.5 6.2" stroke-width="2.1"/>
+    <path d="M13 16 L29 9.5"     stroke-width="2.1"/>
+    <path d="M6.5 24.5 L33 13.7" stroke-width="3.4"/>
+    <path d="M13 27 L25 22.1"    stroke-width="2.1"/>
+    <path d="M13 32 L20.5 28.9"  stroke-width="2.1"/>
+  </g>
+</svg>

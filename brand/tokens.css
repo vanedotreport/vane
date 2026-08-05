@@ -1,0 +1,94 @@
+/* Vane — design tokens
+ *
+ * Style components THROUGH these variables, never with literal hex. The dark theme is a
+ * different set of values for the same names, so anything that reads a token gets both themes
+ * free and anything that hardcodes a colour breaks one of them.
+ *
+ * Precedence, deliberately: OS preference sets the default, and an explicit data-theme on the
+ * root beats it in BOTH directions so a manual toggle always wins.
+ */
+
+:root {
+  /* --- ground -------------------------------------------------------------
+     Chart paper, biased slightly cool. A pure neutral grey reads as unchosen. */
+  --paper:  #E9EBE6;   /* page */
+  --surface:#F6F7F4;   /* cards, panels */
+  --sunk:   #DFE3DC;   /* wells, inputs, the scope background */
+
+  /* --- ink --------------------------------------------------------------- */
+  --ink:    #161C21;   /* primary text */
+  --ink-2:  #47535C;   /* body / secondary */
+  --ink-3:  #7C8A93;   /* labels, captions, disabled */
+  --rule:   #D2D7D0;   /* hairlines */
+  --rule-2: #BEC5BC;   /* stronger borders, inactive gauge segments */
+
+  /* --- brand -------------------------------------------------------------
+     ACCENT is structure: the mark's staff, links, primary buttons, confidence gauge.
+     BRASS is the anomaly and the live state ONLY. Its scarcity is what makes it read.
+     Never use brass for ordinary emphasis — if everything is flagged, nothing is. */
+  --accent: #1E4E78;
+  --brass:  #B27B36;
+
+  /* --- semantic -----------------------------------------------------------
+     Deliberately NOT the brand hues. Severity must never be confused with identity,
+     and a chart series must never borrow a status colour. */
+  --good: #2E6B4F;
+  --warn: #A8761C;
+  --crit: #9E3B2E;
+
+  --shadow: 0 1px 2px rgba(22,28,33,.06), 0 8px 24px -16px rgba(22,28,33,.28);
+
+  /* --- type ---------------------------------------------------------------
+     Three faces mapped to three depths of disclosure, so typography tells you which
+     register you are in before you read a label:
+       sans  → interface chrome, labels, buttons
+       serif → plain-language explanation (it is prose, so it looks like prose)
+       mono  → data, addresses, raw output
+     System stacks on purpose: the CSP blocks font CDNs, and a silent fallback to
+     Times is worse than a considered stack. */
+  --sans:  "Avenir Next","Futura","Gill Sans",ui-sans-serif,system-ui,sans-serif;
+  --serif: "Charter","Iowan Old Style","Palatino Linotype",ui-serif,Georgia,serif;
+  --mono:  ui-monospace,"SF Mono","Menlo","Consolas",monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper:  #0F141A;
+    --surface:#161D24;
+    --sunk:   #0B1015;
+    --ink:    #E6EAE7;
+    --ink-2:  #A3B0B8;
+    --ink-3:  #6E7C86;
+    --rule:   #26303A;
+    --rule-2: #33404B;
+    /* Both brand hues lift on a dark ground — the light-theme values fail contrast here.
+       This is a re-pick, not an inversion. */
+    --accent: #6BA3D6;
+    --brass:  #D9A45E;
+    --good:   #57A67C;
+    --warn:   #D3A34A;
+    --crit:   #D2685A;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 30px -18px rgba(0,0,0,.8);
+  }
+}
+
+/* Explicit toggle beats the OS preference, both ways. */
+:root[data-theme="dark"] {
+  --paper:#0F141A; --surface:#161D24; --sunk:#0B1015;
+  --ink:#E6EAE7; --ink-2:#A3B0B8; --ink-3:#6E7C86;
+  --rule:#26303A; --rule-2:#33404B;
+  --accent:#6BA3D6; --brass:#D9A45E;
+  --good:#57A67C; --warn:#D3A34A; --crit:#D2685A;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -18px rgba(0,0,0,.8);
+}
+:root[data-theme="light"] {
+  --paper:#E9EBE6; --surface:#F6F7F4; --sunk:#DFE3DC;
+  --ink:#161C21; --ink-2:#47535C; --ink-3:#7C8A93;
+  --rule:#D2D7D0; --rule-2:#BEC5BC;
+  --accent:#1E4E78; --brass:#B27B36;
+  --good:#2E6B4F; --warn:#A8761C; --crit:#9E3B2E;
+  --shadow:0 1px 2px rgba(22,28,33,.06), 0 8px 24px -16px rgba(22,28,33,.28);
+}
+
+/* Digits that sit in columns must line up. Applies to every number in the product. */
+.mono, [data-num] { font-family: var(--mono); font-variant-numeric: tabular-nums; }

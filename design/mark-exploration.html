@@ -1,0 +1,287 @@
+<title>Vane — mark exploration</title>
+<style>
+  :root {
+    --paper:#E9EBE6; --surface:#F6F7F4; --sunk:#DFE3DC;
+    --ink:#161C21; --ink-2:#47535C; --ink-3:#7C8A93;
+    --rule:#D2D7D0; --rule-2:#BEC5BC;
+    --accent:#1E4E78; --brass:#B27B36; --crit:#9E3B2E; --good:#2E6B4F;
+    --shadow:0 1px 2px rgba(22,28,33,.06), 0 8px 24px -16px rgba(22,28,33,.28);
+    --sans:"Avenir Next","Futura","Gill Sans",ui-sans-serif,system-ui,sans-serif;
+    --serif:"Charter","Iowan Old Style","Palatino Linotype",ui-serif,Georgia,serif;
+    --mono:ui-monospace,"SF Mono","Menlo","Consolas",monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --paper:#0F141A; --surface:#161D24; --sunk:#0B1015; --ink:#E6EAE7; --ink-2:#A3B0B8; --ink-3:#6E7C86;
+            --rule:#26303A; --rule-2:#33404B; --accent:#6BA3D6; --brass:#D9A45E; --crit:#D2685A; --good:#57A67C;
+            --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -18px rgba(0,0,0,.8); }
+  }
+  :root[data-theme="dark"] { --paper:#0F141A; --surface:#161D24; --sunk:#0B1015; --ink:#E6EAE7; --ink-2:#A3B0B8; --ink-3:#6E7C86;
+    --rule:#26303A; --rule-2:#33404B; --accent:#6BA3D6; --brass:#D9A45E; --crit:#D2685A; --good:#57A67C;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -18px rgba(0,0,0,.8); }
+  :root[data-theme="light"] { --paper:#E9EBE6; --surface:#F6F7F4; --sunk:#DFE3DC; --ink:#161C21; --ink-2:#47535C; --ink-3:#7C8A93;
+    --rule:#D2D7D0; --rule-2:#BEC5BC; --accent:#1E4E78; --brass:#B27B36; --crit:#9E3B2E; --good:#2E6B4F;
+    --shadow:0 1px 2px rgba(22,28,33,.06), 0 8px 24px -16px rgba(22,28,33,.28); }
+
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--paper); color:var(--ink); font-family:var(--sans); font-size:16px; line-height:1.5; -webkit-font-smoothing:antialiased; }
+  .wrap { max-width:1000px; margin:0 auto; padding:36px 20px 80px; }
+  .lbl { font-family:var(--sans); font-size:10.5px; font-weight:600; letter-spacing:.13em; text-transform:uppercase; color:var(--ink-3); }
+
+  h1 { font-family:var(--serif); font-size:30px; font-weight:600; margin:0 0 8px; letter-spacing:-.01em; }
+  .dek { font-family:var(--serif); font-size:17px; color:var(--ink-2); max-width:64ch; margin:0 0 34px; line-height:1.6; }
+  .dek b { color:var(--ink); font-weight:600; }
+
+  .card { background:var(--surface); border:1px solid var(--rule); border-radius:3px; box-shadow:var(--shadow); margin-bottom:20px; overflow:hidden; }
+  .card.win { border-color:var(--brass); }
+  .chead { display:flex; align-items:baseline; gap:12px; padding:18px 22px 0; flex-wrap:wrap; }
+  .chead h2 { font-family:var(--serif); font-size:21px; font-weight:600; margin:0; }
+  .verdict { font-family:var(--sans); font-size:9.5px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; padding:3px 8px; border:1px solid currentColor; border-radius:2px; }
+  .verdict.y { color:var(--good); } .verdict.n { color:var(--crit); } .verdict.m { color:var(--brass); }
+  .why { font-family:var(--serif); font-size:15.5px; color:var(--ink-2); line-height:1.6; padding:8px 22px 0; margin:0; max-width:70ch; }
+  .why b { color:var(--ink); font-weight:600; }
+
+  .rack { display:grid; grid-template-columns:190px 1fr; gap:0; margin-top:18px; border-top:1px solid var(--rule); }
+  @media (max-width:720px) { .rack { grid-template-columns:1fr; } }
+  .big { display:grid; place-items:center; padding:26px; background:var(--sunk); border-right:1px solid var(--rule); }
+  @media (max-width:720px) { .big { border-right:0; border-bottom:1px solid var(--rule); } }
+  .tests { display:flex; flex-wrap:wrap; gap:0; }
+  .t { flex:1 1 150px; padding:18px 20px; border-right:1px solid var(--rule); border-bottom:1px solid var(--rule); display:flex; flex-direction:column; gap:11px; align-items:flex-start; }
+  .t:last-child { border-right:0; }
+  .t .lbl { font-size:9.5px; }
+  .row { display:flex; align-items:flex-end; gap:12px; }
+  .onblack { background:#0B1015; color:#E6EAE7; }
+  .onblack .lbl { color:#6E7C86; }
+  .mono1 { color:var(--ink); }
+  .mono1 .a, .mono1 .b2 { color:inherit !important; stroke:currentColor !important; fill:currentColor !important; }
+
+  /* tab chip — 16px in a real context */
+  .tab { display:inline-flex; align-items:center; gap:7px; background:var(--sunk); border:1px solid var(--rule); border-radius:6px 6px 0 0; padding:6px 12px 6px 9px; font-size:11.5px; color:var(--ink-2); font-family:var(--sans); }
+
+  .lockup { display:flex; align-items:center; gap:12px; }
+  .lockup .wm { font-size:31px; font-weight:600; letter-spacing:-.02em; line-height:1; }
+  .lockup .tl { font-family:var(--serif); font-size:12.5px; color:var(--ink-3); line-height:1.25; display:block; margin-top:3px; letter-spacing:0; font-weight:400; }
+
+  .final { margin-top:34px; padding:26px; background:var(--surface); border:1px solid var(--brass); border-radius:3px; box-shadow:var(--shadow); }
+  .final .lbl { display:block; margin-bottom:16px; }
+  .finalrow { display:flex; gap:40px; flex-wrap:wrap; align-items:center; }
+  .note { margin-top:30px; font-family:var(--serif); font-size:14.5px; color:var(--ink-3); line-height:1.65; max-width:66ch; }
+  .note b { color:var(--ink-2); font-weight:600; }
+  svg { display:block; }
+</style>
+
+<div class="wrap">
+  <h1>Four marks, and why three of them fail</h1>
+  <p class="dek">
+    The old mark was a <b>picture of a weather vane</b> — it named the category and said nothing about the
+    product. These four try to encode something true instead: that Vane resolves a noisy field into one
+    reading, and flags the thing that doesn't fit. Every one is shown at 16px, in one colour, and on black,
+    because that's where marks actually die.
+  </p>
+
+  <!-- ============ A · BARB ============ -->
+  <section class="card win">
+    <div class="chead">
+      <h2>A · Barb</h2>
+      <span class="verdict y">Recommended</span>
+    </div>
+    <p class="why">
+      A <b>wind barb</b> — the notation meteorologists use to write down speed and direction in one glyph.
+      Not a picture of an instrument, a <b>reading taken by one</b>. Each barb is a slot; lengths vary because
+      activity varies; one barb is longer, brass, and crosses the staff — the anomaly that broke the pattern.
+      That's the product in four strokes, and the vertical staff means it collides with no common UI icon.
+    </p>
+    <div class="rack">
+      <div class="big">
+        <svg width="104" height="104" viewBox="0 0 40 40" aria-label="Barb mark">
+          <path d="M13 5.5 L13 34.5" stroke="var(--accent)" stroke-width="2.1" stroke-linecap="round"/>
+          <path d="M13 10.5 L23.5 6.2" stroke="var(--accent)" stroke-width="2.1" stroke-linecap="round"/>
+          <path d="M13 16 L29 9.5" stroke="var(--accent)" stroke-width="2.1" stroke-linecap="round"/>
+          <path d="M6.5 24.5 L33 13.7" stroke="var(--brass)" stroke-width="2.6" stroke-linecap="round"/>
+          <path d="M13 27 L25 22.1" stroke="var(--accent)" stroke-width="2.1" stroke-linecap="round"/>
+          <path d="M13 32 L20.5 28.9" stroke="var(--accent)" stroke-width="2.1" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="tests">
+        <div class="t"><span class="lbl">Size ladder</span>
+          <div class="row">
+            <svg width="32" height="32" viewBox="0 0 40 40" aria-hidden="true"><path d="M13 5.5 L13 34.5" stroke="var(--accent)" stroke-width="2.1" stroke-linecap="round"/><path d="M13 10.5 L23.5 6.2" stroke="var(--accent)" stroke-width="2.1" stroke-linecap="round"/><path d="M13 16 L29 9.5" stroke="var(--accent)" stroke-width="2.1" stroke-linecap="round"/><path d="M6.5 24.5 L33 13.7" stroke="var(--brass)" stroke-width="2.6" stroke-linecap="round"/><path d="M13 27 L25 22.1" stroke="var(--accent)" stroke-width="2.1" stroke-linecap="round"/><path d="M13 32 L20.5 28.9" stroke="var(--accent)" stroke-width="2.1" stroke-linecap="round"/></svg>
+            <svg width="22" height="22" viewBox="0 0 40 40" aria-hidden="true"><path d="M13 5.5 L13 34.5" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round"/><path d="M13 10.5 L23.5 6.2" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round"/><path d="M13 16 L29 9.5" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round"/><path d="M6.5 24.5 L33 13.7" stroke="var(--brass)" stroke-width="3" stroke-linecap="round"/><path d="M13 27 L25 22.1" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round"/><path d="M13 32 L20.5 28.9" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round"/></svg>
+            <svg width="16" height="16" viewBox="0 0 40 40" aria-hidden="true"><path d="M13 6 L13 34" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/><path d="M13 11 L25 6.5" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/><path d="M6.5 24.5 L33 13.5" stroke="var(--brass)" stroke-width="3.6" stroke-linecap="round"/><path d="M13 31 L22 27" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/></svg>
+          </div>
+        </div>
+        <div class="t"><span class="lbl">Browser tab</span>
+          <span class="tab"><svg width="14" height="14" viewBox="0 0 40 40" aria-hidden="true"><path d="M13 6 L13 34" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/><path d="M13 11 L25 6.5" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/><path d="M6.5 24.5 L33 13.5" stroke="var(--brass)" stroke-width="3.6" stroke-linecap="round"/><path d="M13 31 L22 27" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/></svg>vane.report</span>
+        </div>
+        <div class="t mono1"><span class="lbl">One colour</span>
+          <svg width="34" height="34" viewBox="0 0 40 40" aria-hidden="true"><path d="M13 5.5 L13 34.5" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/><path d="M13 10.5 L23.5 6.2" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/><path d="M13 16 L29 9.5" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/><path d="M6.5 24.5 L33 13.7" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/><path d="M13 27 L25 22.1" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/><path d="M13 32 L20.5 28.9" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/></svg>
+        </div>
+        <div class="t onblack"><span class="lbl">On black</span>
+          <svg width="34" height="34" viewBox="0 0 40 40" aria-hidden="true"><path d="M13 5.5 L13 34.5" stroke="#6BA3D6" stroke-width="2.1" stroke-linecap="round"/><path d="M13 10.5 L23.5 6.2" stroke="#6BA3D6" stroke-width="2.1" stroke-linecap="round"/><path d="M13 16 L29 9.5" stroke="#6BA3D6" stroke-width="2.1" stroke-linecap="round"/><path d="M6.5 24.5 L33 13.7" stroke="#D9A45E" stroke-width="2.6" stroke-linecap="round"/><path d="M13 27 L25 22.1" stroke="#6BA3D6" stroke-width="2.1" stroke-linecap="round"/><path d="M13 32 L20.5 28.9" stroke="#6BA3D6" stroke-width="2.1" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ B · SOUNDING ============ -->
+  <section class="card">
+    <div class="chead">
+      <h2>B · Sounding</h2>
+      <span class="verdict n">Fails at 16px</span>
+    </div>
+    <p class="why">
+      The scope's own signature: slot planes receding into depth, one of them flat and flagged. Conceptually the
+      strongest of the four — it's a literal miniature of the thing that makes the product distinctive.
+      <b>And it dies small.</b> Stacked horizontal lines at favicon size are indistinguishable from a hamburger
+      menu, and you'd spend forever being mistaken for a nav control. Worth keeping as a section device or a
+      loading state; not as the mark.
+    </p>
+    <div class="rack">
+      <div class="big">
+        <svg width="104" height="104" viewBox="0 0 40 40" aria-label="Sounding mark">
+          <path d="M14 10 H26" stroke="var(--accent)" stroke-width="1.7" stroke-linecap="round" opacity=".45"/>
+          <path d="M11 16 H29" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" opacity=".65"/>
+          <path d="M7 23 H33" stroke="var(--brass)" stroke-width="2.4" stroke-linecap="round"/>
+          <circle cx="12" cy="23" r="2.1" fill="var(--brass)"/><circle cx="20" cy="23" r="2.8" fill="var(--crit)"/><circle cx="28" cy="23" r="2.1" fill="var(--brass)"/>
+          <path d="M4 31 H36" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" opacity=".85"/>
+        </svg>
+      </div>
+      <div class="tests">
+        <div class="t"><span class="lbl">Size ladder</span>
+          <div class="row">
+            <svg width="32" height="32" viewBox="0 0 40 40" aria-hidden="true"><path d="M14 10 H26" stroke="var(--accent)" stroke-width="1.7" stroke-linecap="round" opacity=".45"/><path d="M11 16 H29" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" opacity=".65"/><path d="M7 23 H33" stroke="var(--brass)" stroke-width="2.4" stroke-linecap="round"/><circle cx="12" cy="23" r="2.1" fill="var(--brass)"/><circle cx="20" cy="23" r="2.8" fill="var(--crit)"/><circle cx="28" cy="23" r="2.1" fill="var(--brass)"/><path d="M4 31 H36" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" opacity=".85"/></svg>
+            <svg width="22" height="22" viewBox="0 0 40 40" aria-hidden="true"><path d="M14 10 H26" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round" opacity=".45"/><path d="M11 16 H29" stroke="var(--accent)" stroke-width="2.3" stroke-linecap="round" opacity=".65"/><path d="M7 23 H33" stroke="var(--brass)" stroke-width="2.9" stroke-linecap="round"/><path d="M4 31 H36" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" opacity=".85"/></svg>
+            <svg width="16" height="16" viewBox="0 0 40 40" aria-hidden="true"><path d="M14 10 H26" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" opacity=".5"/><path d="M10 17 H30" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" opacity=".7"/><path d="M7 24 H33" stroke="var(--brass)" stroke-width="3.4" stroke-linecap="round"/><path d="M4 31 H36" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/></svg>
+          </div>
+        </div>
+        <div class="t"><span class="lbl">The collision</span>
+          <div class="row" style="align-items:center">
+            <svg width="16" height="16" viewBox="0 0 40 40" aria-hidden="true"><path d="M14 10 H26" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" opacity=".5"/><path d="M10 17 H30" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" opacity=".7"/><path d="M7 24 H33" stroke="var(--brass)" stroke-width="3.4" stroke-linecap="round"/><path d="M4 31 H36" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/></svg>
+            <span style="font-family:var(--mono);font-size:11px;color:var(--ink-3)">vs</span>
+            <svg width="16" height="16" viewBox="0 0 40 40" aria-hidden="true"><path d="M8 13 H32" stroke="var(--ink-3)" stroke-width="3.2" stroke-linecap="round"/><path d="M8 20 H32" stroke="var(--ink-3)" stroke-width="3.2" stroke-linecap="round"/><path d="M8 27 H32" stroke="var(--ink-3)" stroke-width="3.2" stroke-linecap="round"/></svg>
+          </div>
+        </div>
+        <div class="t mono1"><span class="lbl">One colour</span>
+          <svg width="34" height="34" viewBox="0 0 40 40" aria-hidden="true"><path d="M14 10 H26" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" opacity=".4"/><path d="M11 16 H29" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity=".6"/><path d="M7 23 H33" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><path d="M4 31 H36" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity=".85"/></svg>
+        </div>
+        <div class="t onblack"><span class="lbl">On black</span>
+          <svg width="34" height="34" viewBox="0 0 40 40" aria-hidden="true"><path d="M14 10 H26" stroke="#6BA3D6" stroke-width="1.7" stroke-linecap="round" opacity=".45"/><path d="M11 16 H29" stroke="#6BA3D6" stroke-width="1.8" stroke-linecap="round" opacity=".65"/><path d="M7 23 H33" stroke="#D9A45E" stroke-width="2.4" stroke-linecap="round"/><circle cx="12" cy="23" r="2.1" fill="#D9A45E"/><circle cx="20" cy="23" r="2.8" fill="#D2685A"/><circle cx="28" cy="23" r="2.1" fill="#D9A45E"/><path d="M4 31 H36" stroke="#6BA3D6" stroke-width="2" stroke-linecap="round" opacity=".85"/></svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ C · BRACKET ============ -->
+  <section class="card">
+    <div class="chead">
+      <h2>C · Bracket</h2>
+      <span class="verdict n">Reads as “more”</span>
+    </div>
+    <p class="why">
+      The sandwich signature abstracted: two outer marks, one displaced victim between them, enclosed. Sharp
+      idea, sharp shape — but three dots in a row <b>is the universal glyph for an overflow menu</b>. At small
+      sizes people will try to click it. It also welds the brand to one detector, when the whole point is that
+      more are coming.
+    </p>
+    <div class="rack">
+      <div class="big">
+        <svg width="104" height="104" viewBox="0 0 40 40" aria-label="Bracket mark">
+          <path d="M7 13 V9 H33 V13" stroke="var(--accent)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="9.5" cy="21" r="2.6" fill="var(--brass)"/>
+          <circle cx="20" cy="26" r="3.6" fill="var(--crit)"/>
+          <circle cx="30.5" cy="21" r="2.6" fill="var(--brass)"/>
+          <path d="M9.5 21 L20 26 L30.5 21" stroke="var(--crit)" stroke-width="1.5" fill="none" opacity=".5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="tests">
+        <div class="t"><span class="lbl">Size ladder</span>
+          <div class="row">
+            <svg width="32" height="32" viewBox="0 0 40 40" aria-hidden="true"><path d="M7 13 V9 H33 V13" stroke="var(--accent)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9.5" cy="21" r="2.6" fill="var(--brass)"/><circle cx="20" cy="26" r="3.6" fill="var(--crit)"/><circle cx="30.5" cy="21" r="2.6" fill="var(--brass)"/></svg>
+            <svg width="22" height="22" viewBox="0 0 40 40" aria-hidden="true"><path d="M7 13 V9 H33 V13" stroke="var(--accent)" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9.5" cy="21" r="3" fill="var(--brass)"/><circle cx="20" cy="26" r="4" fill="var(--crit)"/><circle cx="30.5" cy="21" r="3" fill="var(--brass)"/></svg>
+            <svg width="16" height="16" viewBox="0 0 40 40" aria-hidden="true"><circle cx="9.5" cy="22" r="3.8" fill="var(--brass)"/><circle cx="20" cy="26" r="4.6" fill="var(--crit)"/><circle cx="30.5" cy="22" r="3.8" fill="var(--brass)"/></svg>
+          </div>
+        </div>
+        <div class="t"><span class="lbl">The collision</span>
+          <div class="row" style="align-items:center">
+            <svg width="16" height="16" viewBox="0 0 40 40" aria-hidden="true"><circle cx="9.5" cy="22" r="3.8" fill="var(--brass)"/><circle cx="20" cy="26" r="4.6" fill="var(--crit)"/><circle cx="30.5" cy="22" r="3.8" fill="var(--brass)"/></svg>
+            <span style="font-family:var(--mono);font-size:11px;color:var(--ink-3)">vs</span>
+            <svg width="16" height="16" viewBox="0 0 40 40" aria-hidden="true"><circle cx="9" cy="20" r="3.6" fill="var(--ink-3)"/><circle cx="20" cy="20" r="3.6" fill="var(--ink-3)"/><circle cx="31" cy="20" r="3.6" fill="var(--ink-3)"/></svg>
+          </div>
+        </div>
+        <div class="t mono1"><span class="lbl">One colour</span>
+          <svg width="34" height="34" viewBox="0 0 40 40" aria-hidden="true"><path d="M7 13 V9 H33 V13" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9.5" cy="21" r="2.6" fill="currentColor"/><circle cx="20" cy="26" r="3.6" fill="currentColor"/><circle cx="30.5" cy="21" r="2.6" fill="currentColor"/></svg>
+        </div>
+        <div class="t onblack"><span class="lbl">On black</span>
+          <svg width="34" height="34" viewBox="0 0 40 40" aria-hidden="true"><path d="M7 13 V9 H33 V13" stroke="#6BA3D6" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9.5" cy="21" r="2.6" fill="#D9A45E"/><circle cx="20" cy="26" r="3.6" fill="#D2685A"/><circle cx="30.5" cy="21" r="2.6" fill="#D9A45E"/></svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ D · RESOLVE ============ -->
+  <section class="card">
+    <div class="chead">
+      <h2>D · Resolve</h2>
+      <span class="verdict m">Beautiful, unusable</span>
+    </div>
+    <p class="why">
+      Scattered strokes on the left settling into a single vector on the right — <b>noise becoming direction</b>,
+      which is the most accurate description of what Vane does. It's the best idea here and the worst mark:
+      the whole meaning lives in the difference between the scattered end and the resolved end, and by 16px
+      that difference is two pixels. Keep it. Use it as the loading animation while an analysis runs, where it
+      gets to be big and move.
+    </p>
+    <div class="rack">
+      <div class="big">
+        <svg width="104" height="104" viewBox="0 0 40 40" aria-label="Resolve mark">
+          <path d="M5 12 L10 10.5" stroke="var(--ink-3)" stroke-width="1.6" stroke-linecap="round"/>
+          <path d="M4.5 19 L9.5 20.5" stroke="var(--ink-3)" stroke-width="1.6" stroke-linecap="round"/>
+          <path d="M6 26.5 L11 24" stroke="var(--ink-3)" stroke-width="1.6" stroke-linecap="round"/>
+          <path d="M12 15 L17.5 16.8" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" opacity=".7"/>
+          <path d="M12.5 23 L18 20.6" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" opacity=".7"/>
+          <path d="M19.5 19 L31 19" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round"/>
+          <path d="M27.5 14.5 L34 19 L27.5 23.5" stroke="var(--brass)" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="tests">
+        <div class="t"><span class="lbl">Size ladder</span>
+          <div class="row">
+            <svg width="32" height="32" viewBox="0 0 40 40" aria-hidden="true"><path d="M5 12 L10 10.5" stroke="var(--ink-3)" stroke-width="1.6" stroke-linecap="round"/><path d="M4.5 19 L9.5 20.5" stroke="var(--ink-3)" stroke-width="1.6" stroke-linecap="round"/><path d="M6 26.5 L11 24" stroke="var(--ink-3)" stroke-width="1.6" stroke-linecap="round"/><path d="M12 15 L17.5 16.8" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" opacity=".7"/><path d="M12.5 23 L18 20.6" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" opacity=".7"/><path d="M19.5 19 L31 19" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round"/><path d="M27.5 14.5 L34 19 L27.5 23.5" stroke="var(--brass)" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg width="22" height="22" viewBox="0 0 40 40" aria-hidden="true"><path d="M5 12 L10 10.5" stroke="var(--ink-3)" stroke-width="2.2" stroke-linecap="round"/><path d="M4.5 19 L9.5 20.5" stroke="var(--ink-3)" stroke-width="2.2" stroke-linecap="round"/><path d="M6 26.5 L11 24" stroke="var(--ink-3)" stroke-width="2.2" stroke-linecap="round"/><path d="M19.5 19 L31 19" stroke="var(--accent)" stroke-width="2.8" stroke-linecap="round"/><path d="M27.5 14.5 L34 19 L27.5 23.5" stroke="var(--brass)" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg width="16" height="16" viewBox="0 0 40 40" aria-hidden="true"><path d="M5 13 L11 11.5" stroke="var(--ink-3)" stroke-width="3" stroke-linecap="round"/><path d="M5 26 L11 24" stroke="var(--ink-3)" stroke-width="3" stroke-linecap="round"/><path d="M15 19 L30 19" stroke="var(--accent)" stroke-width="3.2" stroke-linecap="round"/><path d="M26 13 L34 19 L26 25" stroke="var(--brass)" stroke-width="3.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div class="t"><span class="lbl">What survives at 16</span>
+          <span style="font-family:var(--serif);font-size:13.5px;color:var(--ink-2);line-height:1.45">An arrow. Just an arrow.</span>
+        </div>
+        <div class="t mono1"><span class="lbl">One colour</span>
+          <svg width="34" height="34" viewBox="0 0 40 40" aria-hidden="true"><path d="M5 12 L10 10.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" opacity=".45"/><path d="M4.5 19 L9.5 20.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" opacity=".45"/><path d="M6 26.5 L11 24" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" opacity=".45"/><path d="M12 15 L17.5 16.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity=".7"/><path d="M12.5 23 L18 20.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity=".7"/><path d="M19.5 19 L31 19" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M27.5 14.5 L34 19 L27.5 23.5" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="t onblack"><span class="lbl">On black</span>
+          <svg width="34" height="34" viewBox="0 0 40 40" aria-hidden="true"><path d="M5 12 L10 10.5" stroke="#6E7C86" stroke-width="1.6" stroke-linecap="round"/><path d="M4.5 19 L9.5 20.5" stroke="#6E7C86" stroke-width="1.6" stroke-linecap="round"/><path d="M6 26.5 L11 24" stroke="#6E7C86" stroke-width="1.6" stroke-linecap="round"/><path d="M12 15 L17.5 16.8" stroke="#6BA3D6" stroke-width="1.8" stroke-linecap="round" opacity=".7"/><path d="M12.5 23 L18 20.6" stroke="#6BA3D6" stroke-width="1.8" stroke-linecap="round" opacity=".7"/><path d="M19.5 19 L31 19" stroke="#6BA3D6" stroke-width="2.4" stroke-linecap="round"/><path d="M27.5 14.5 L34 19 L27.5 23.5" stroke="#D9A45E" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ LOCKUP ============ -->
+  <section class="final">
+    <span class="lbl">Lockup · Barb</span>
+    <div class="finalrow">
+      <div class="lockup">
+        <svg width="42" height="42" viewBox="0 0 40 40" aria-hidden="true"><path d="M13 5.5 L13 34.5" stroke="var(--accent)" stroke-width="2.1" stroke-linecap="round"/><path d="M13 10.5 L23.5 6.2" stroke="var(--accent)" stroke-width="2.1" stroke-linecap="round"/><path d="M13 16 L29 9.5" stroke="var(--accent)" stroke-width="2.1" stroke-linecap="round"/><path d="M6.5 24.5 L33 13.7" stroke="var(--brass)" stroke-width="2.6" stroke-linecap="round"/><path d="M13 27 L25 22.1" stroke="var(--accent)" stroke-width="2.1" stroke-linecap="round"/><path d="M13 32 L20.5 28.9" stroke="var(--accent)" stroke-width="2.1" stroke-linecap="round"/></svg>
+        <span><span class="wm">Vane</span><span class="tl">Which way the flow is moving</span></span>
+      </div>
+      <div class="lockup" style="gap:9px">
+        <svg width="26" height="26" viewBox="0 0 40 40" aria-hidden="true"><path d="M13 5.5 L13 34.5" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round"/><path d="M13 10.5 L23.5 6.2" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round"/><path d="M13 16 L29 9.5" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round"/><path d="M6.5 24.5 L33 13.7" stroke="var(--brass)" stroke-width="3" stroke-linecap="round"/><path d="M13 27 L25 22.1" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round"/><path d="M13 32 L20.5 28.9" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round"/></svg>
+        <span class="wm" style="font-size:20px">Vane</span>
+      </div>
+    </div>
+  </section>
+
+  <p class="note">
+    <b>Why the brass barb matters.</b> Take it out and you have a tidy little chart glyph. Leave it in and the
+    mark states the product's thesis before anyone reads a word: most of what happens is ordinary, one thing
+    isn't, and we point at that one. It's also the only element that survives being shrunk — at 16px the mark
+    reduces to <b>a staff, two ticks, and the odd one out</b>, which is still the whole idea.
+  </p>
+</div>
